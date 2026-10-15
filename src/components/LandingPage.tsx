@@ -15,11 +15,11 @@ import {
 } from 'lucide-react';
 
 interface LandingPageProps {
-  onGetStarted: () => void;
-  onLogin: () => void;
+  onOpenDashboard: () => void;
+  onOpenPlayground: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onOpenDashboard, onOpenPlayground }) => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
       {/* HEADER */}
@@ -41,21 +41,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
             <a href="#product" className="hover:text-blue-600 transition-colors">Product</a>
             <a href="#architecture" className="hover:text-blue-600 transition-colors">How It Works</a>
             <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-            <a href="#benchmark" className="hover:text-blue-600 transition-colors">Benchmarks</a>
           </nav>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={onLogin}
+              onClick={onOpenPlayground}
               className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
             >
-              Log In
+              AI Playground
             </button>
             <button
-              onClick={onGetStarted}
+              onClick={onOpenDashboard}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm transition-colors flex items-center gap-1.5"
             >
-              Get Started
+              <span>Open Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -82,18 +81,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={onGetStarted}
+              onClick={onOpenDashboard}
               className="w-full sm:w-auto px-6 py-3 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2"
             >
-              Get Started Free
+              Open Live Dashboard
               <ArrowRight className="w-4 h-4" />
             </button>
-            <a
-              href="#architecture"
+            <button
+              onClick={onOpenPlayground}
               className="w-full sm:w-auto px-6 py-3 text-base font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Explore How It Works
-            </a>
+              Test in AI Playground
+            </button>
           </div>
 
           {/* Clean Architecture Diagram */}

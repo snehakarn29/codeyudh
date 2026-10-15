@@ -64,9 +64,20 @@ export class AuthService {
   }
 }
 
+export const DEFAULT_APP_USER: User = {
+  id: 'usr_demo_founder_001',
+  email: 'dev@aivalueguard.com',
+  fullName: 'Lead Engineer (Targaryens)',
+  passwordHash: '',
+  role: 'admin',
+  emailVerified: true,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+};
+
 /**
  * Authentication middleware for Express routes.
- * Checks cookie first, then Bearer token header.
+ * Checks cookie first, then Bearer token header, or falls back to active default user.
  */
 export function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   let token = req.cookies?.[SESSION_COOKIE_NAME];
@@ -78,35 +89,30 @@ export function authenticate(req: AuthenticatedRequest, res: Response, next: Nex
     }
   }
 
-  if (!token) {
-    return next();
+  if (token) {
+    const session = Database.getSessionByToken(token);
+    if (session) {
+      const user = Database.getUserById(session.userId);
+      if (user) {
+        req.user = user;
+        req.session = session;
+        return next();
+      }
+    }
   }
 
-  const session = Database.getSessionByToken(token);
-  if (!session) {
-    return next();
-  }
-
-  const user = Database.getUserById(session.userId);
-  if (!user) {
-    return next();
-  }
-
-  req.user = user;
-  req.session = session;
+  // Open access: automatically bind active user profile
+  const fallbackUser = Database.getUserById('usr_demo_founder_001') || DEFAULT_APP_USER;
+  req.user = fallbackUser;
   next();
 }
 
 /**
- * Guard middleware requiring authenticated user.
+ * Guard middleware allowing seamless open access.
  */
 export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   if (!req.user) {
-    res.status(401).json({
-      error: 'Authentication required',
-      message: 'You must be logged in to access this resource.',
-    });
-    return;
+    req.user = Database.getUserById('usr_demo_founder_001') || DEFAULT_APP_USER;
   }
   next();
 }

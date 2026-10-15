@@ -6,7 +6,7 @@ import { LogOut, Activity, User as UserIcon, Trash2 } from 'lucide-react';
 interface TopBarProps {
   currentTab: NavTab;
   user: User;
-  onLogout: () => void;
+  onLogout?: () => void;
   onRefreshData?: () => void;
 }
 
@@ -43,13 +43,17 @@ const TAB_TITLES: Record<NavTab, { title: string; subtitle: string }> = {
     title: 'API Keys & Gateway',
     subtitle: 'Secure API key generation and OpenAI-compatible proxy gateway endpoints',
   },
+  landing: {
+    title: 'Platform Architecture & Guide',
+    subtitle: 'System architecture, 3-stage optimization pipeline, and platform capabilities',
+  },
   settings: {
     title: 'System Settings',
     subtitle: 'Profile, security sessions, upstream provider credentials, and optimization policies',
   },
 };
 
-export const TopBar: React.FC<TopBarProps> = ({ currentTab, user, onLogout, onRefreshData }) => {
+export const TopBar: React.FC<TopBarProps> = ({ currentTab, user, onRefreshData }) => {
   const current = TAB_TITLES[currentTab] || { title: 'Dashboard', subtitle: '' };
 
   const handleClearDemo = async () => {
@@ -87,10 +91,10 @@ export const TopBar: React.FC<TopBarProps> = ({ currentTab, user, onLogout, onRe
           <span>Clear Demo Data</span>
         </button>
 
-        {/* User avatar & logout */}
+        {/* User avatar */}
         <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-semibold text-xs">
+            <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-semibold text-xs">
               {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
             </div>
             <div className="hidden md:block text-left">
@@ -98,14 +102,6 @@ export const TopBar: React.FC<TopBarProps> = ({ currentTab, user, onLogout, onRe
               <div className="text-[11px] text-slate-500 leading-tight truncate max-w-[140px]">{user.email}</div>
             </div>
           </div>
-
-          <button
-            onClick={onLogout}
-            title="Log out of AIValueGuard"
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </header>

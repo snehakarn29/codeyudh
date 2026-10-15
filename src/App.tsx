@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api, User } from './api';
 import { LandingPage } from './components/LandingPage';
-import { AuthModal } from './components/AuthModal';
 import { Sidebar, NavTab } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { OverviewDashboard } from './components/OverviewDashboard';
@@ -14,81 +13,36 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { ApiKeysView } from './components/ApiKeysView';
 import { SettingsView } from './components/SettingsView';
 
+const DEFAULT_ACTIVE_USER: User = {
+  id: 'usr_demo_founder_001',
+  email: 'dev@aivalueguard.com',
+  fullName: 'Lead Engineer (Targaryens)',
+  role: 'admin',
+  emailVerified: true,
+  createdAt: '2026-09-15T00:00:00.000Z',
+};
+
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | null>(null);
+  const [currentUser, setCurrentUser] = useState<User>(DEFAULT_ACTIVE_USER);
   const [currentTab, setCurrentTab] = useState<NavTab>('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Check if session exists on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await api.getMe();
-        setCurrentUser(res.user);
-      } catch {
-        // Not logged in or expired session
-        setCurrentUser(null);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-    checkAuth();
+    // Sync user profile from server if customized
+    api.getMe()
+      .then((res) => {
+        if (res.user) {
+          setCurrentUser(res.user);
+        }
+      })
+      .catch(() => {});
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await api.logout();
-    } catch (err) {
-      console.error(err);
-    }
-    setCurrentUser(null);
-    setCurrentTab('overview');
-  };
-
-  const handleAuthSuccess = (user: User) => {
-    setCurrentUser(user);
-    setAuthModalMode(null);
-    setCurrentTab('overview');
-  };
 
   const handleRefreshData = () => {
     setRefreshKey((k) => k + 1);
   };
 
-  if (loadingUser) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-slate-500 text-sm">
-          <span className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <span>Initializing AIValueGuard...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // If unauthenticated, show public landing page + optional auth modal
-  if (!currentUser) {
-    return (
-      <>
-        <LandingPage
-          onGetStarted={() => setAuthModalMode('register')}
-          onLogin={() => setAuthModalMode('login')}
-        />
-        {authModalMode && (
-          <AuthModal
-            initialMode={authModalMode}
-            onSuccess={handleAuthSuccess}
-            onClose={() => setAuthModalMode(null)}
-          />
-        )}
-      </>
-    );
-  }
-
-  // Authenticated Dashboard Layout
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans text-slate-900">
       {/* Sidebar */}
@@ -104,7 +58,6 @@ export default function App() {
         <TopBar
           currentTab={currentTab}
           user={currentUser}
-          onLogout={handleLogout}
           onRefreshData={handleRefreshData}
         />
 
@@ -125,6 +78,12 @@ export default function App() {
             <SettingsView
               currentUser={currentUser}
               onUpdateUser={(u) => setCurrentUser(u)}
+            />
+          )}
+          {currentTab === 'landing' && (
+            <LandingPage
+              onOpenDashboard={() => setCurrentTab('overview')}
+              onOpenPlayground={() => setCurrentTab('playground')}
             />
           )}
         </main>

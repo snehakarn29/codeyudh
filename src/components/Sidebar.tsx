@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 
 export type NavTab =
@@ -23,7 +24,8 @@ export type NavTab =
   | 'logs'
   | 'analytics'
   | 'keys'
-  | 'settings';
+  | 'settings'
+  | 'landing';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -48,6 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'analytics', label: 'Analytics', icon: LineChart },
     { id: 'keys', label: 'API Keys', icon: Key },
     { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'landing', label: 'Architecture Guide', icon: Sparkles },
   ];
 
   return (
